@@ -1,0 +1,4 @@
+Flask==2.2.3
+requests>=2.32.2
+pytest==7.4.2
+Werkzeug==2.2.3

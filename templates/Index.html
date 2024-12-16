@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishNet</title>
+</head>
+<body>
+    <h1>PhishNet</h1>
+    <h2>Phishing Detection</h2>
+    <input type="text" id="urlInput" placeholder="Enter URL">
+    <button onclick="checkPhishing()">Check</button>
+    <p id="detectionResult"></p>
+
+    <h2>Report a Phishing URL</h2>
+    <button onclick="submitReport()">Submit Report</button>
+
+    <script>
+        async function checkPhishing() {
+            const url = document.getElementById("urlInput").value;
+            if (!url) {
+                alert("Please enter a URL.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/detect", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url })
+                });
+                const result = await response.json();
+                document.getElementById("detectionResult").textContent = result.is_phishing ? "Phishing detected!" : "URL is safe.";
+            } catch (error) {
+                console.error("Error checking phishing:", error);
+                alert("An error occurred.");
+            }
+        }
+
+        async function submitReport() {
+            const url = document.getElementById("urlInput").value;
+            const reason = "User submitted report";
+
+            if (!url) {
+                alert("Please enter a URL to report.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/report", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url, reason })
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    alert("Report submitted successfully!");
+                } else {
+                    alert("Failed to submit the report.");
+                }
+            } catch (error) {
+                console.error("Error submitting report:", error);
+                alert("An error occurred.");
+            }
+        }
+    </script>
+</body>
+</html>
